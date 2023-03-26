@@ -118,6 +118,9 @@ checkerFramework {
     '-ArequirePrefixInWarningSuppressions',
     '-AwarnUnneededSuppressions',
     '-Awarns',
+    '-Ainfer=ajava',
+    '-AshowPrefixInWarningMessages',
+    '-Aajava=/tmp/WPITEMP-plumelib/',
   ]
 }
 // To use a snapshot version of the Checker Framework.
