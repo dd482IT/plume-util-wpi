@@ -60,7 +60,7 @@ public final class CollectionsPlume {
    * @param l a list to sort
    * @param c a sorted version of the list
    */
-  public static <T> List<T> sortList(List<T> l, Comparator<@MustCallUnknown ? super T> c) {
+  public static <T> List<T> sortList(List<T> l, Comparator<? super T> c) {
     List<T> result = new ArrayList<>(l);
     Collections.sort(result, c);
     return result;
@@ -76,7 +76,6 @@ public final class CollectionsPlume {
    * @return true iff a does not contain duplicate elements
    */
   @SuppressWarnings({"allcheckers:purity", "lock"}) // side effect to local state (HashSet)
-  @Pure
   public static <T> boolean hasDuplicates(List<T> a) {
     HashSet<T> hs = new HashSet<>();
     if (a instanceof RandomAccess) {
@@ -105,7 +104,6 @@ public final class CollectionsPlume {
    * @param a a list
    * @return true iff a does not contain duplicate elements
    */
-  @Pure
   public static <T> boolean noDuplicates(List<T> a) {
     return !hasDuplicates(a);
   }
@@ -294,8 +292,7 @@ public final class CollectionsPlume {
     "allcheckers:purity",
     "lock"
   }) // side effect to static field deepEqualsUnderway
-  @Pure
-  public static boolean deepEquals(@Nullable Object o1, @Nullable Object o2) {
+  public static boolean deepEquals(Object o1, Object o2) {
     @SuppressWarnings("interning")
     boolean sameObject = (o1 == o2);
     if (sameObject) {
@@ -340,8 +337,8 @@ public final class CollectionsPlume {
     }
 
     if (o1 instanceof List<?> && o2 instanceof List<?>) {
-      List<? extends @Signed Object> l1 = (List<? extends @Signed Object>) o1;
-      List<? extends @Signed Object> l2 = (List<? extends @Signed Object>) o2;
+      List<? extends Object> l1 = (List<? extends Object>) o1;
+      List<? extends Object> l2 = (List<? extends Object>) o2;
       if (l1.size() != l2.size()) {
         return false;
       }
@@ -382,10 +379,10 @@ public final class CollectionsPlume {
    * @return a list of the results of applying {@code f} to the elements of {@code iterable}
    */
   public static <
-          @KeyForBottom FROM extends @Nullable @UnknownKeyFor @MustCallUnknown Object,
-          @KeyForBottom TO extends @Nullable @UnknownKeyFor @MustCallUnknown Object>
+          FROM extends Object,
+          TO extends Object>
       List<TO> mapList(
-          @MustCallUnknown Function<@MustCallUnknown ? super FROM, ? extends TO> f,
+          Function<? super FROM, ? extends TO> f,
           Iterable<FROM> iterable) {
     List<TO> result;
 
@@ -428,10 +425,10 @@ public final class CollectionsPlume {
    * @return a list of the results of applying {@code f} to the elements of {@code a}
    */
   public static <
-          @KeyForBottom FROM extends @Nullable @UnknownKeyFor Object,
-          @KeyForBottom TO extends @Nullable @UnknownKeyFor Object>
+          FROM extends Object,
+          TO extends Object>
       List<TO> mapList(
-          @MustCallUnknown Function<@MustCallUnknown ? super FROM, ? extends TO> f, FROM[] a) {
+          Function<? super FROM, ? extends TO> f, FROM[] a) {
     int size = a.length;
     List<TO> result = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {
@@ -459,10 +456,10 @@ public final class CollectionsPlume {
    * @return a list of the results of applying {@code f} to the elements of {@code list}
    */
   public static <
-          @KeyForBottom FROM extends @Nullable @UnknownKeyFor Object,
-          @KeyForBottom TO extends @Nullable @UnknownKeyFor Object>
+          FROM extends Object,
+          TO extends Object>
       List<TO> transform(
-          Iterable<FROM> iterable, Function<@MustCallUnknown ? super FROM, ? extends TO> f) {
+          Iterable<FROM> iterable, Function<? super FROM, ? extends TO> f) {
     return mapList(f, iterable);
   }
 
@@ -695,7 +692,7 @@ public final class CollectionsPlume {
    * @return list of lists of length dims, each of which combines elements from objs
    */
   public static <T> List<List<T>> createCombinations(
-      @Positive int dims, @NonNegative int start, List<T> objs) {
+      int dims, int start, List<T> objs) {
 
     if (dims < 1) {
       throw new IllegalArgumentException();
@@ -751,7 +748,7 @@ public final class CollectionsPlume {
    * @return list of lists of length arity, each of which combines integers from start to cnt
    */
   public static ArrayList<ArrayList<Integer>> createCombinations(
-      int arity, @NonNegative int start, int cnt) {
+      int arity, int start, int cnt) {
 
     long numResults = choose(cnt + arity - 1, arity);
     if (numResults > 100000000) {
@@ -835,18 +832,18 @@ public final class CollectionsPlume {
 
     @SuppressWarnings("JdkObsolete")
     @Override
-    public boolean hasNext(@GuardSatisfied EnumerationIterator<T> this) {
+    public boolean hasNext(EnumerationIterator<T> this) {
       return e.hasMoreElements();
     }
 
     @SuppressWarnings("JdkObsolete")
     @Override
-    public T next(@GuardSatisfied EnumerationIterator<T> this) {
+    public T next(EnumerationIterator<T> this) {
       return e.nextElement();
     }
 
     @Override
-    public void remove(@GuardSatisfied EnumerationIterator<T> this) {
+    public void remove(EnumerationIterator<T> this) {
       throw new UnsupportedOperationException();
     }
   }
@@ -907,12 +904,12 @@ public final class CollectionsPlume {
     }
 
     @Override
-    public boolean hasNext(@GuardSatisfied MergedIterator2<T> this) {
+    public boolean hasNext(MergedIterator2<T> this) {
       return itor1.hasNext() || itor2.hasNext();
     }
 
     @Override
-    public T next(@GuardSatisfied MergedIterator2<T> this) {
+    public T next(MergedIterator2<T> this) {
       if (itor1.hasNext()) {
         return itor1.next();
       } else if (itor2.hasNext()) {
@@ -923,7 +920,7 @@ public final class CollectionsPlume {
     }
 
     @Override
-    public void remove(@GuardSatisfied MergedIterator2<T> this) {
+    public void remove(MergedIterator2<T> this) {
       throw new UnsupportedOperationException();
     }
   }
@@ -956,7 +953,7 @@ public final class CollectionsPlume {
 
     @SuppressWarnings({"allcheckers:purity", "lock:method.guarantee.violated"})
     @Override
-    public boolean hasNext(@GuardSatisfied MergedIterator<T> this) {
+    public boolean hasNext(MergedIterator<T> this) {
       while (!current.hasNext() && itorOfItors.hasNext()) {
         current = itorOfItors.next();
       }
@@ -964,7 +961,7 @@ public final class CollectionsPlume {
     }
 
     @Override
-    public T next(@GuardSatisfied MergedIterator<T> this) {
+    public T next(MergedIterator<T> this) {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
@@ -972,7 +969,7 @@ public final class CollectionsPlume {
     }
 
     @Override
-    public void remove(@GuardSatisfied MergedIterator<T> this) {
+    public void remove(MergedIterator<T> this) {
       throw new UnsupportedOperationException();
     }
   }
@@ -982,7 +979,7 @@ public final class CollectionsPlume {
    *
    * @param <T> the type of elements of the iterator
    */
-  public static final class FilteredIterator<T extends @Nullable Object> implements Iterator<T> {
+  public static final class FilteredIterator<T extends Object> implements Iterator<T> {
     /** The iterator that this object is filtering. */
     Iterator<T> itor;
     /** The predicate that determines which elements to retain. */
@@ -1016,7 +1013,7 @@ public final class CollectionsPlume {
       "lock:method.guarantee.violated"
     }) // benevolent side effects
     @Override
-    public boolean hasNext(@GuardSatisfied FilteredIterator<T> this) {
+    public boolean hasNext(FilteredIterator<T> this) {
       while (!currentValid && itor.hasNext()) {
         current = itor.next();
         currentValid = filter.accept(current);
@@ -1025,7 +1022,7 @@ public final class CollectionsPlume {
     }
 
     @Override
-    public T next(@GuardSatisfied FilteredIterator<T> this) {
+    public T next(FilteredIterator<T> this) {
       if (hasNext()) {
         currentValid = false;
         @SuppressWarnings("interning")
@@ -1038,7 +1035,7 @@ public final class CollectionsPlume {
     }
 
     @Override
-    public void remove(@GuardSatisfied FilteredIterator<T> this) {
+    public void remove(FilteredIterator<T> this) {
       throw new UnsupportedOperationException();
     }
   }
@@ -1079,12 +1076,12 @@ public final class CollectionsPlume {
     }
 
     @Override
-    public boolean hasNext(@GuardSatisfied RemoveFirstAndLastIterator<T> this) {
+    public boolean hasNext(RemoveFirstAndLastIterator<T> this) {
       return itor.hasNext();
     }
 
     @Override
-    public T next(@GuardSatisfied RemoveFirstAndLastIterator<T> this) {
+    public T next(RemoveFirstAndLastIterator<T> this) {
       if (!itor.hasNext()) {
         throw new NoSuchElementException();
       }
@@ -1100,7 +1097,6 @@ public final class CollectionsPlume {
      * @return the first element of the iterator that was used to construct this
      */
     @SuppressWarnings("allcheckers:purity.not.sideeffectfree.call") // constructing an exception
-    @Pure
     public T getFirst() {
       @SuppressWarnings("interning") // check for equality to a special value
       boolean invalid = (first == nothing);
@@ -1120,7 +1116,6 @@ public final class CollectionsPlume {
      * @return the last element of the iterator that was used to construct this
      */
     // TODO: This is buggy when the delegate is empty.
-    @Pure
     public T getLast() {
       if (itor.hasNext()) {
         throw new Error();
@@ -1129,7 +1124,7 @@ public final class CollectionsPlume {
     }
 
     @Override
-    public void remove(@GuardSatisfied RemoveFirstAndLastIterator<T> this) {
+    public void remove(RemoveFirstAndLastIterator<T> this) {
       throw new UnsupportedOperationException();
     }
   }
@@ -1209,7 +1204,7 @@ public final class CollectionsPlume {
    * @return the old value, before it was incremented; this might be null
    * @throws Error if the key is in the Map but maps to a non-Integer
    */
-  public static <K extends @NonNull Object> @Nullable Integer incrementMap(
+  public static <K extends Object> Integer incrementMap(
       Map<K, Integer> m, K key) {
     return incrementMap(m, key, 1);
   }
@@ -1225,7 +1220,7 @@ public final class CollectionsPlume {
    * @return the old value, before it was incremented; this might be null
    * @throws Error if the key is in the Map but maps to a non-Integer
    */
-  public static <K extends @NonNull Object> @Nullable Integer incrementMap(
+  public static <K extends Object> Integer incrementMap(
       Map<K, Integer> m, K key, int count) {
     Integer newTotal = m.getOrDefault(key, 0) + count;
     return m.put(key, newTotal);
@@ -1239,7 +1234,7 @@ public final class CollectionsPlume {
    * @param m map to be converted to a string
    * @return a multi-line string representation of m
    */
-  public static <K extends @Signed @Nullable Object, V extends @Signed @Nullable Object>
+  public static <K extends Object, V extends Object>
       String mapToString(Map<K, V> m) {
     StringBuilder sb = new StringBuilder();
     mapToString(sb, m, "");
@@ -1256,7 +1251,7 @@ public final class CollectionsPlume {
    * @param m map to be converted to a string
    * @param linePrefix prefix to write at the beginning of each line
    */
-  public static <K extends @Signed @Nullable Object, V extends @Signed @Nullable Object>
+  public static <K extends Object, V extends Object>
       void mapToString(Appendable sb, Map<K, V> m, String linePrefix) {
     try {
       for (Map.Entry<K, V> entry : m.entrySet()) {
@@ -1279,9 +1274,9 @@ public final class CollectionsPlume {
    * @param m a map whose keyset will be sorted
    * @return a sorted version of m.keySet()
    */
-  public static <K extends Comparable<@MustCallUnknown ? super K>, V>
-      Collection<@KeyFor("#1") K> sortedKeySet(Map<K, V> m) {
-    ArrayList<@KeyFor("#1") K> theKeys = new ArrayList<>(m.keySet());
+  public static <K extends Comparable<? super K>, V>
+      Collection<K> sortedKeySet(Map<K, V> m) {
+    ArrayList<K> theKeys = new ArrayList<>(m.keySet());
     Collections.sort(theKeys);
     return theKeys;
   }
@@ -1295,9 +1290,9 @@ public final class CollectionsPlume {
    * @param comparator the Comparator to use for sorting
    * @return a sorted version of m.keySet()
    */
-  public static <K, V> Collection<@KeyFor("#1") K> sortedKeySet(
+  public static <K, V> Collection<K> sortedKeySet(
       Map<K, V> m, Comparator<K> comparator) {
-    ArrayList<@KeyFor("#1") K> theKeys = new ArrayList<>(m.keySet());
+    ArrayList<K> theKeys = new ArrayList<>(m.keySet());
     Collections.sort(theKeys, comparator);
     return theKeys;
   }
@@ -1350,7 +1345,7 @@ public final class CollectionsPlume {
    * @param key the value to look up in the set
    * @return the object in the given set that is equal to key, or null
    */
-  public static @Nullable Object getFromSet(Set<? extends @Nullable Object> set, Object key) {
+  public static Object getFromSet(Set<? extends Object> set, Object key) {
     if (key == null) {
       return null;
     }
@@ -1452,8 +1447,7 @@ public final class CollectionsPlume {
    * @return true iff size(a intersect b) &ge; i
    */
   @SuppressWarnings({"allcheckers:purity", "lock"}) // side effect to local state (BitSet)
-  @Pure
-  public static boolean intersectionCardinalityAtLeast(BitSet a, BitSet b, @NonNegative int i) {
+  public static boolean intersectionCardinalityAtLeast(BitSet a, BitSet b, int i) {
     // Here are three implementation strategies to determine the
     // cardinality of the intersection:
     // 1. a.clone().and(b).cardinality()
@@ -1488,9 +1482,8 @@ public final class CollectionsPlume {
    * @return true iff size(a intersect b intersect c) &ge; i
    */
   @SuppressWarnings({"allcheckers:purity", "lock"}) // side effect to local state (BitSet)
-  @Pure
   public static boolean intersectionCardinalityAtLeast(
-      BitSet a, BitSet b, BitSet c, @NonNegative int i) {
+      BitSet a, BitSet b, BitSet c, int i) {
     // See comments in intersectionCardinalityAtLeast(BitSet, BitSet, int).
     // This is a copy of that.
 
@@ -1517,7 +1510,6 @@ public final class CollectionsPlume {
    * @return size(a intersect b)
    */
   @SuppressWarnings({"allcheckers:purity", "lock"}) // side effect to local state (BitSet)
-  @Pure
   public static int intersectionCardinality(BitSet a, BitSet b) {
     BitSet intersection = (BitSet) a.clone();
     intersection.and(b);
@@ -1533,7 +1525,6 @@ public final class CollectionsPlume {
    * @return size(a intersect b intersect c)
    */
   @SuppressWarnings({"allcheckers:purity", "lock"}) // side effect to local state (BitSet)
-  @Pure
   public static int intersectionCardinality(BitSet a, BitSet b, BitSet c) {
     BitSet intersection = (BitSet) a.clone();
     intersection.and(b);
