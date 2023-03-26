@@ -77,7 +77,9 @@ dependencies {
 }
 tasks.withType(JavaCompile).configureEach {
   // "-processing" avoids javac warning "No processor claimed any of these annotations".
-  options.compilerArgs << '-Xlint:all,-processing' //<< '-Werror'
+  options.compilerArgs << '-Xlint:all,-processing' // << '-Werror'
+  options.compilerArgs << "-Xmaxerrs" << "3000"
+  options.compilerArgs << "-Xmaxwarns" << "3000"
   options.errorprone {
     enabled = JavaVersion.current() != JavaVersion.VERSION_1_8
     // Recommends @InlineMe, which isn't in the error_prone_annotations jar file.  An `implementation`
